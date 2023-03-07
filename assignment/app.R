@@ -44,7 +44,7 @@ ui <- fluidPage(
                          
                          )),
                 
-                tabPanel("Table",
+                tabPanel("State and Age",
                          fluidRow(sidebarPanel(width = 5,
                                                h4("Look Through The Age Groups & Different States"),
                                                helpText("This panel displays the number of individuals who completed their covid series by age in each County, State"),
@@ -66,7 +66,7 @@ ui <- fluidPage(
                                 tableOutput("dataTable")
                          )       
                          )),
-                tabPanel("Plots", 
+                tabPanel("Metro vs Non-Metro", 
                          fluidRow(sidebarPanel(p("You can analyze the relationship between the percent of 
                      people who completed primary series and the Percent of 
                      people completed primary series and booster based on ", 
@@ -76,7 +76,7 @@ ui <- fluidPage(
                          ), 
                          mainPanel(plotOutput("plot"))), 
                 ),
-                tabPanel("Tables", 
+                tabPanel("Avgs: primary vs booster dose", 
                          sidebarPanel(p("You can choose the ", strong("state "), "you are 
                      interested in"), 
                                       p("The table on the right will show the average percent of 
