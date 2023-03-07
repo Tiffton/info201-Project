@@ -158,6 +158,9 @@ server <- function(input, output) {
   
   #------------------------------------------------------------------- --------------
   #Yvonne's plot coding
+  data <- read_delim("project_data.csv")
+  data <- na.omit(data)
+  
   output$checkboxMetro <- renderUI({
     checkboxGroupInput("metro", "Choose Metro", 
                        choices = unique(data$Metro_status))
