@@ -46,15 +46,23 @@ ui <- fluidPage(
                 
                 tabPanel("Table",
                          fluidRow(sidebarPanel(width = 5,
-                                               h4("Look Through The Age Groups"),
+                                               h4("Look Through The Age Groups & Different States"),
                                                helpText("This panel displays the number of individuals who completed their covid series by age in each County, State"),
+                                               br(),
+                                               helpText("Choose an age group for the table"),
                                                radioButtons("age_group", "Age Group",
                                                             choices = c("5Plus", "5-17", "12Plus", "18Plus", "65Plus"),
-                                                            selected = c("5Plus"))
+                                                            selected = c("5Plus")),
+                                               br(),
+                                               helpText("Choose what you would like to include in the bar chart"),
+                                               uiOutput("checkboxes")
+                                               
                          ),
-                         strong(textOutput("age_text")),
+                         
                          br(),
                          column(7, 
+                                plotOutput("Plot", width = "190%"),
+                                strong(textOutput("age_text")),
                                 tableOutput("dataTable")
                          )       
                          )),
@@ -98,9 +106,35 @@ server <- function(input, output) {
   
   
   #--------------------------------------------------------------------------------------
-  #Tiffany's Table Tab for table that shows completed series in each state and select age
+  #Tiffany's Table and plot Tab for table that shows completed series in each state and select age
   
+  datab <- reactive({
+    covidVax %>% 
+      group_by(Recip_State) %>% 
+      select(Recip_State, Series_Complete_Yes, Series_Complete_Pop_Pct) %>% 
+      filter(!is.na(Recip_State), !is.na(Series_Complete_Yes), !is.na(Series_Complete_Pop_Pct)) %>% 
+      summarise(total = sum(Series_Complete_Yes)) %>% 
+      filter(Recip_State %in% input$States)
+  })
   
+  output$checkboxes <- renderUI({
+    checkboxGroupInput(
+      "States", "Select States:",
+      choices = unique(covidVax$Recip_State)
+    )
+  })
+  
+  output$Plot <- renderPlot({
+    datab() %>%
+      ggplot(aes(Recip_State, total, fill="blue")) +
+      geom_col() +
+      labs(title = "Total of Covid Doses Completed by State", 
+           x ="State", 
+           y="Number of People who Completed the Series",
+           fill = "color" )
+  })
+  
+  #--------------------------
   table_data <- reactive({
     if(input$age_group %in% "5Plus") {
       covidVax %>% 
