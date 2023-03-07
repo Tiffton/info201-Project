@@ -54,7 +54,7 @@ ui <- fluidPage(
                                                             choices = c("5Plus", "5-17", "12Plus", "18Plus", "65Plus"),
                                                             selected = c("5Plus")),
                                                br(),
-                                               helpText("Choose what you would like to include in the bar chart"),
+                                               helpText("Choose which States you would like to include in the bar chart"),
                                                uiOutput("checkboxes")
                                                
                          ),
