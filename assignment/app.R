@@ -30,8 +30,8 @@ ui <- fluidPage(
                                          p("What we are doing in this project is analyzing the data set taken from the CDC, we want to organize it and 
                                          visualize the data so that it is easier for users to conceptualize what the information suggests."),
                                          br(),
-                                         p("What we are doing in this project is analyzing the data set taken from the CDC, we want to organize it and visualize the
-                                         data so that it is easier for users to conceptualize what the information suggests."),
+                                         p("Our target audience is those who work in the healthcare, public health, and political fields for them to be able to visualize the data
+                                           in an easy way that demonstrates the trends in vaccination rates for Covid 19."),
                                          br(),
                                          br(),
                                          p("This data set is quite large, it has 3283 observations and 57 variables."),
@@ -47,7 +47,9 @@ ui <- fluidPage(
                 tabPanel("State and Age",
                          fluidRow(sidebarPanel(width = 5,
                                                h4("Look Through The Age Groups & Different States"),
-                                               helpText("This panel displays the number of individuals who completed their covid series by age in each County, State"),
+                                               helpText("This panel displays 2 different forms of information."),
+                                               helpText("One is a bar graph that demonstrates total number of indivudals who completed the vaccination series by State."),
+                                               helpText("The other is a Table that breaks down those who completed the vaccination series by age"),
                                                br(),
                                                helpText("Choose an age group for the table"),
                                                radioButtons("age_group", "Age Group",
@@ -115,11 +117,33 @@ ui <- fluidPage(
                                                uiOutput("dropdownState")
                          ), 
                          mainPanel(plotOutput("plotState")))
-                #___ Add a comma above and add your tapPanel HERE
+                ),
+                         
+                tabPanel("Conclusion",
+                         fluidRow(column(12, 
+                                         h1("Conclusion"),
+                                         br(),
+                                         p("notable insight or pattern discovered in your project, link it to a chart/table/graph"),
+                                         br(),
+                                         p("broader implications of the insight"),
+                                         br(),
+                                         p("The dataset was resonable quality, it was organized and consistent. However, some issues were with
+                                           the size of the dataset making it more challenging to work with."),
+                                         p("This dataset gives unbiased results as it is focusing on reporting data about the number of individuals who are
+                                         getting the different Covid-19 vaccinations across the US. Except for age,it does not contain identifiable information or
+                                         factors like race. We do not think that this information will harm a specific population as the data is focused on the type of vaccine
+                                           received and location. Also, the ages are widely ranged and is not singling out a specific age."),
+                                         br(),
+                                         p("Future ideas to adhance this project could be to get more specific on the data being used and portrayed to the user. 
+                                           In addition to increasing interactions and better graphics such as adding an interactive map for the user.")
+                                         
+                                         ))
+                )
+                
     )
   )
 )
-)
+
 
 #Server inputs is below
 #-----------------------------------------------------------
@@ -153,11 +177,11 @@ server <- function(input, output) {
   
   output$Plot <- renderPlot({
     datab() %>%
-      ggplot(aes(Recip_State, total, fill="blue")) +
+      ggplot(aes(Recip_State, total, fill="salmon")) +
       geom_col() +
-      labs(title = "Total of Covid Doses Completed by State", 
+      labs(title = "Original Covid-19 Vaccine Series Completed by State", 
            x ="State", 
-           y="Number of People who Completed the Series",
+           y="Total Number of People who Completed the Series",
            fill = "color" )
   })
   
@@ -328,7 +352,7 @@ server <- function(input, output) {
       scale_fill_manual(values = "purple")
   })
   #------------------------------------------------------------------------------------------------
-  #Input youre next coding HERE
+  
   
   
   
