@@ -85,11 +85,29 @@ ui <- fluidPage(
                      booster dose of the state you choose"), 
                                       uiOutput("checkboxState")
                          ), 
-                         mainPanel(tableOutput("table")))
-                
+                         mainPanel(tableOutput("table"))),
+                tabPanel("Series Completed vs First Booster Dose",
+                           sidebarLayout(
+                             sidebarPanel(
+                               h4("Analyze the Relation between Vaccination Series
+                                  Complete and Receiving First Booster Dose in
+                                  Different Age Range"),
+                               p("You can choose a ", strong("State"), "you are interested
+                                 in and choose the age range you want to analyze.\n"),
+                               selectInput("plotstate", "Select State",
+                                           choices = covidVax$Recip_State),
+                               radioButtons("age", "Select Age Data",
+                                            choices = c("5-12" = "05", "12-18" = "12",
+                                                        "18-65" = "18", "65+" = "65")
+                               ),
+                             ),   
+                             mainPanel(
+                               textOutput("textcounty"),
+                               plotOutput("plotcounty", width = "350%", height = "500px")
+                             )
+                           )  
+                )
                 #___ Add a comma above and add your tapPanel HERE
-                
-                
     )
   )
 )
@@ -239,9 +257,35 @@ server <- function(input, output) {
   })
   
   #------------------------------------------------------------------------------------------------
+  #Maisie Plot Coding
+  agecounty <- reactive({
+    covidVax %>%
+      filter(Recip_State == input$plotstate) %>%
+      mutate(booster05 = Booster_Doses_5Plus - Booster_Doses_12Plus,
+             booster12 = Booster_Doses_12Plus - Booster_Doses_18Plus,
+             booster18 = Booster_Doses_18Plus- Booster_Doses_65Plus,
+             booster65 = Booster_Doses_65Plus,
+             series05 = Series_Complete_5Plus - Series_Complete_12Plus,
+             series12 = Series_Complete_12Plus - Series_Complete_18Plus,
+             series18 = Series_Complete_18Plus - Series_Complete_65Plus,
+             series65 = Series_Complete_65Plus) %>%
+      select(Recip_County, ends_with(input$age)) %>%
+      drop_na()
+  })
+  output$plotcounty <- renderPlot({
+    agecounty() %>% 
+      ggplot(aes(x = !!sym(paste0("series", input$age)), 
+                 y = !!sym(paste0("booster", input$age)),
+                 col = Recip_County)) +
+      geom_point() +
+      labs(title = "The Relation between Completing the Series Vaccination and Receiving Booster Doses by County",
+           x = "Series Completed", y = "Booster Doses", col = "County")
+  })
+  output$textcounty <- renderText({
+    paste("The state you selected contains:",nrow(agecounty()),"counties.\n")
+  })
+  #------------------------------------------------------------------------------------------------
   #Input youre next coding HERE
-  
-  
   
   
   
