@@ -13,7 +13,7 @@ ui <- fluidPage(
                                          h1("Introducing The Data"),
                                          img(alt = "vaccination", src = 
                                                "https://www.news-medical.net/images/news/ImageForNews_734493_16717867507843586.jpg", 
-                                             height="80%", width="80%"), 
+                                             height="50%", width="50%"), 
                                          p("For this project, we are analyzing a data set from the",
                                            em("Center for Disease Control and Prevention"),
                                            " that tracks Covid 19 vaccinations across the United States. 
@@ -123,9 +123,11 @@ ui <- fluidPage(
                          fluidRow(column(12, 
                                          h1("Conclusion"),
                                          br(),
-                                         p("notable insight or pattern discovered in your project, link it to a chart/table/graph"),
+                                         p( "A notable insight is when looking at the metro vs non-metro tab, we can see that counties with public transportation access
+                                           has a greater positive trend for vaccination rates, compared to counties without public transportation."),
                                          br(),
-                                         p("broader implications of the insight"),
+                                         p( "Knowing that public transportation can impact vaccination rates, the government can implement better resources for the public 
+                                           to increase rates of vaccinations in the future."),
                                          br(),
                                          p("The dataset was resonable quality, it was organized and consistent. However, some issues were with
                                            the size of the dataset making it more challenging to work with."),
