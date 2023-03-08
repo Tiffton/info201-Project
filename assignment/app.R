@@ -106,10 +106,19 @@ ui <- fluidPage(
                                plotOutput("plotcounty", width = "350%", height = "500px")
                              )
                            )  
-                )
+                ),
+                tabPanel("Age Groups taking a First Dose", 
+                         fluidRow(sidebarPanel(p("Here you can anlayze how many of specifically first doses of the COVID vaccine have been taken by each individual age group. 
+                                                 Each data set is grouped by", 
+                                                 strong("State")), 
+                                               p("Select the state you are interested in seeing"), 
+                                               uiOutput("dropdownState")
+                         ), 
+                         mainPanel(plotOutput("plotState")))
                 #___ Add a comma above and add your tapPanel HERE
     )
   )
+)
 )
 
 #Server inputs is below
@@ -285,9 +294,41 @@ server <- function(input, output) {
     paste("The state you selected contains:",nrow(agecounty()),"counties.\n")
   })
   #------------------------------------------------------------------------------------------------
+  #Ki Plot Coding
+  covidVax$zero5 <- covidVax$Administered_Dose1_Recip - covidVax$Administered_Dose1_Recip_5Plus
+  covidVax$five12 <- covidVax$Administered_Dose1_Recip_5Plus - covidVax$Administered_Dose1_Recip_12Plus
+  covidVax$twelve18 <- covidVax$Administered_Dose1_Recip_12Plus - covidVax$Administered_Dose1_Recip_18Plus
+  covidVax$eighteen65 <- covidVax$Administered_Dose1_Recip_18Plus - covidVax$Administered_Dose1_Recip_65Plus
+  covidVax$sixty.five <- covidVax$Administered_Dose1_Recip_65Plus
+  
+  pd.sum <- covidVax %>%
+    group_by(State = Recip_State) %>%
+    summarize("Age 0-5" = sum(zero5, na.rm = TRUE), "Age 5-12" = sum(five12, na.rm = TRUE),
+              "Age 12-18" = sum(twelve18, na.rm = TRUE), "Age 18-65" = sum(eighteen65, na.rm = TRUE),
+              "Age 65+" = sum(sixty.five, na.rm = TRUE))
+  pd.sum2 <- pd.sum %>% 
+    pivot_longer(cols = -State, names_to = "Age Range", values_to = "Total")
+  
+  output$dropdownState <- renderUI({
+    selectInput("state2", "Choose State", 
+                choices = unique(pd.sum2$State))
+  })
+  
+  select_data2 <- reactive({
+    pd.sum2 %>% 
+      filter(State %in% input$state2)
+  })
+  
+  output$plotState <- renderPlot({
+    select_data2() %>%
+      ggplot(aes(x = `Age Range`, y = Total, fill = State)) +
+      geom_bar(stat = "identity", position = "dodge") +
+      labs(x = "Age Range", y = "Total", fill = "State") +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+      scale_fill_manual(values = "purple")
+  })
+  #------------------------------------------------------------------------------------------------
   #Input youre next coding HERE
-  
-  
   
   
   
